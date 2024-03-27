@@ -9,23 +9,17 @@ public class Program {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter a folder path: ");
+        System.out.println("Enter a file path: ");
         String strPath = sc.nextLine();
 
         File path = new File(strPath);
 
-        File[] folders = path.listFiles(File::isDirectory); //criando vetor de files contendo o caminho de cada diretorio
-        for (File folder : folders) {
-            System.out.println(folder);
-        }
+        System.out.println("getName: " + path.getName()); //nome do arquivo
+        System.out.println("getParent: " + path.getParent()); //caminho
+        System.out.println("getPath: " + path.getPath()); //caminho completo
 
-        File[] files = path.listFiles(File::isFile); //somente a lista de arquivos
-        for (File file : files) {
-            System.out.println(file);
-        }
 
-        boolean sucess = new File(strPath + "//subdir").mkdir(); //criando subdiretorio
-        System.out.println("Diretorio criado com sucesso: " + sucess);
+
 
         sc.close();
 
