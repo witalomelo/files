@@ -1,24 +1,68 @@
 package application;
 
 
-import java.io.File;
+import entities.Product;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.List;
 
 public class Program {
     public static void main(String[] args) {
 
+        Locale.setDefault(Locale.US);
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter a file path: ");
-        String strPath = sc.nextLine();
+        List<Product> list = new ArrayList<>();
 
-        File path = new File(strPath);
+        System.out.println("Enter file path: ");
+        String sourceFileStr = sc.nextLine();
 
-        System.out.println("getName: " + path.getName()); //nome do arquivo
-        System.out.println("getParent: " + path.getParent()); //caminho
-        System.out.println("getPath: " + path.getPath()); //caminho completo
+        File sourceFile = new File(sourceFileStr);
+        String sourceFolderStr = sourceFile.getParent(); //caminho desconsiderando o arquivo
+
+        boolean success = new File(sourceFolderStr + "/out").mkdir(); //criando diretorio out
+
+        String targetFileStr = sourceFolderStr + "/out/summary.csv"; //definir o caminho para um arquivo CSV
+
+        try (BufferedReader br = new BufferedReader(new FileReader(sourceFileStr))) {
+
+            //selecionando cada item da lista
+            String itemCsv = br.readLine(); //variavel para leitura de cada linha
+            while (itemCsv != null) { //verificando se o item é nulo
+
+                String[] fields = itemCsv.split(","); //colocando cada item separado por virgula dentro de uma array
+                String name = fields[0];
+                double price = Double.parseDouble(fields[1]);
+                int quantity = Integer.parseInt(fields[2]);
+
+                list.add(new Product(name, price, quantity));
+
+                itemCsv = br.readLine(); //pulando para a proxima linha
+
+            }
+
+            //gravando cada item no arquivo de saida
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(targetFileStr))) {
+
+                for (Product item : list) {
+                    bw.write(item.getNome() + "," + String.format("%.2f", item.total()));
+                    bw.newLine(); //pulando a linha
+                }
+                System.out.println(targetFileStr + " CREATED");
 
 
+            } catch (IOException e) {
+                System.out.println("Error: " + e.getMessage());
+
+            }
+
+
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+        }
 
 
         sc.close();
